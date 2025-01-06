@@ -1,6 +1,6 @@
 import React from 'react';
 import './FormPage.css';
-
+import fire from "../../Firebase/FIrebase.jsx";
 /**
  * @component FormPage
  * @description A comprehensive initial treatment form (טופס טיפול ראשוני) component.
@@ -39,6 +39,7 @@ const FormPage = () => {
     
     // Add "none" for unchecked checkboxes and unselected radio buttons
     const allInputs = formElement.querySelectorAll('input, select, textarea');
+    console.log('All inputs:', allInputs);
     allInputs.forEach(input => {
       if (!data[input.name]) {
         if (input.type === 'checkbox' || input.type === 'radio') {
@@ -49,23 +50,10 @@ const FormPage = () => {
     
     try {
       console.log('Sending data:', data);
-      const response = await fetch('/api/save', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data)
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Server error:', errorData);
-        throw new Error(`Server error: ${errorData.error || 'Unknown error'}`);
-      }
-      
-      const result = await response.json();
-      console.log('Success:', result);
-      alert('הטופס נשמר בהצלחה!');
+      // Send data to Firebase
+      await fire.sendData(data); 
+      alert('הטופס נשלח בהצלחה!');
+
     } catch (error) {
       console.error('Error details:', error);
       alert(`שגיאה בשמירת הטופס: ${error.message}`);
